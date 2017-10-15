@@ -105,7 +105,44 @@ begin
                 when "1110" =>      -- MOV    **Note dont load flags for this instruction** 
                 result_and_flags := Cin & B;
                 
-                when "1111" =>      -- Not Used
+                when "1111" =>      -- BSL and BSR
+                if (Cin = '1') then -- if 1, then BSL
+                    if (B(2 downto 0) = "0010") then -- shift twice
+                        result_and_flags(7 downto 2) := A(5 downto 0);
+                        result_and_flags(1 downto 0) := "00";
+                        result_and_flags(8) := '1';
+                    elsif (B(2 downto 0) = "0100") then -- shift four times
+                        result_and_flags(7 downto 4) := A(3 downto 0);
+                        result_and_flags(3 downto 0) := "0000";
+                        result_and_flags(8) := '1';                       
+                    elsif (B(2 downto 0) = "0110") then -- shift six times
+                        result_and_flags(7 downto 6) := A(1 downto 0);
+                        result_and_flags(5 downto 0) := "000000";
+                        result_and_flags(8) := '1';                     
+                    else
+                        result_and_flags(7 downto 0) := A;
+                        result_and_flags(8) := '0';
+                    end if;
+                
+                else --BSR
+                    if (B(2 downto 0) = "0010") then -- shift twice
+                        result_and_flags(5 downto 0) := A(7 downto 2);
+                        result_and_flags(7 downto 6) := "00";
+                        result_and_flags(8) := '1';
+                    elsif (B(2 downto 0) = "0100") then -- shift four times
+                        result_and_flags(3 downto 0) := A(7 downto 4);
+                        result_and_flags(7 downto 4) := "0000";
+                        result_and_flags(8) := '1';                       
+                    elsif (B(2 downto 0) = "0110") then -- shift six times
+                        result_and_flags(1 downto 0) := A(7 downto 6);
+                        result_and_flags(7 downto 2) := "000000";
+                        result_and_flags(8) := '1';                     
+                    else
+                        result_and_flags(7 downto 0) := A;
+                        result_and_flags(8) := '0';
+                    end if;
+            
+                end if;
                 result_and_flags := "000000000";
             
                 when others =>
