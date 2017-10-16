@@ -47,7 +47,7 @@ architecture Behavioral of ALU is
 
 begin
 
-    logic_unit: process(SEL)
+    logic_unit: process(SEL, A, B, Cin)
         variable result_and_flags : std_logic_vector  (8 downto 0)  := "000000000";
         begin
             case SEL is
@@ -103,7 +103,7 @@ begin
                 result_and_flags(7) := A (7);
             
                 when "1110" =>      -- MOV    **Note dont load flags for this instruction** 
-                result_and_flags := Cin & B;
+                result_and_flags := '0' & B;
                 
                 when "1111" =>      -- BSL and BSR
                 if (Cin = '1') then -- if 1, then BSL
